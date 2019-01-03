@@ -13,8 +13,30 @@
 #define PC88		1
 #define MUC 		2
 
-void PC88writeline(char *buffer, int len, int comment, int *line, FILE *out)
+void PC88writeline(char *buffer, int len, int comment, int *line, FILE *out, int skipheader)
 {
+	if(skipheader)
+	{
+		if(!strncmp(buffer, "#mucom88", 8))
+			return;
+		if(!strncmp(buffer, "#title", 6))
+			return;
+		if(!strncmp(buffer, "#composer", 9))
+			return;
+		if(!strncmp(buffer, "#author", 7))
+			return;
+		if(!strncmp(buffer, "#voice", 6))
+			return;
+		if(!strncmp(buffer, "#pcm", 4))
+			return;
+		if(!strncmp(buffer, "#date", 5))
+			return;
+		if(!strncmp(buffer, "#comment", 8))
+			return;
+		if(*line == 10 && !len)
+			return;
+	}
+
 	fprintf(out, "%d '", *line);
 	fwrite(buffer, sizeof(char), len, out);
 	fprintf(out, "\r\n");
@@ -27,7 +49,7 @@ void MUCwriteline(char *buffer, int len, FILE *out)
 	fprintf(out, "\r\n");
 }
 
-int MUCtoPC88(FILE *file, FILE *out, int removecomments)
+int MUCtoPC88(FILE *file, FILE *out, int removecomments, int skipheader)
 {
 	char buffer[BUFFER_LEN];
 	int read = 0, comment = 0, line = 10, 
@@ -45,8 +67,8 @@ int MUCtoPC88(FILE *file, FILE *out, int removecomments)
 				case 0x0D: // Ignore
 					break;
 				case 0x0A: // Enter
-					if(pos || !pos && lastlen)  // eat up multipe empty lines
-						PC88writeline(buffer, pos, comment, &line, out);
+					if(pos || !pos && lastlen)	// eat up multipe empty lines
+						PC88writeline(buffer, pos, comment, &line, out, skipheader);
 					lastlen = pos;
 					pos = 0;
 					comment = 0;
@@ -62,7 +84,7 @@ int MUCtoPC88(FILE *file, FILE *out, int removecomments)
 							buffer[pos++] = read;
 						else
 						{
-							PC88writeline(buffer, pos, comment, &line, out);
+							PC88writeline(buffer, pos, comment, &line, out, skipheader);
 							pos = 0;
 							buffer[pos++] = read;
 						}
@@ -130,17 +152,18 @@ int PC88toMUC(FILE *file, FILE *out)
 
 void ShowUsage()
 {
-	printf("Usage:\n\tMUConvert -pc88 <source> <target> [-withcomments]\n");
+	printf("Usage:\n\tMUConvert -pc88 <source> <target> [-withcomments] [-withheader]\n");
 	printf("\tMUConvert -muc <source> <target>\n");
 	printf("\t-pc88: Adds BASIC line numbers, removes Tabs and Comments by default\n");
 	printf("\t-muc: Removes BASIC line numbers and file header from exported BASIC file\n");
 	printf("\t-withcomments: In PC88 mode leaves all comments intact\n");
+	printf("\t-withheader: In PC88 mode leaves header intact\n");
 }
 
 int main(int argc, char **argv)
 {
 	FILE *file, *out;
-	int type = UNDEFINED, removecomments = 1;
+	int type = UNDEFINED, removecomments = 1, skipheader = 1;
 	
 	printf("MUC Windows <-> PC-88 MUCOM88 converter\n");
 	printf("\tArtemio Urbina 2019 under GPL\n\tThanks to Yuzo Koshiro\n");
@@ -152,8 +175,10 @@ int main(int argc, char **argv)
 		if(!strcmp(argv[1], "-pc88"))
 			type = PC88;
 	}
-	if(argc == 5 && !strcmp(argv[4], "-withcomments"))
+	if(argc >= 5 && !strcmp(argv[4], "-withcomments"))
 		removecomments = 0;
+	if(argc == 6 && !strcmp(argv[5], "-withheader"))
+		skipheader = 0;
 
 	if(type == UNDEFINED || argc < 4)
 	{
@@ -177,7 +202,7 @@ int main(int argc, char **argv)
 	printf("Converting %s to %s\n", argv[2], argv[3]);
 
 	if(type == PC88)
-		MUCtoPC88(file, out, removecomments);
+		MUCtoPC88(file, out, removecomments, skipheader);
 
 	if(type == MUC)
 		PC88toMUC(file, out);
