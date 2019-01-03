@@ -30,8 +30,11 @@ MUConvert -muc <source> <target>
 
 # Original Files
 His post: https://twitter.com/yuzokoshiro/status/1075806760340869121
+
 PC-8801 floppy downloads: https://www.ancient.co.jp/~mucom88/
+
 Windows version: https://onitama.tv/mucom88/
+
 Code at Github: https://github.com/onitama/mucom88
 
 # Thanks
