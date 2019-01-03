@@ -12,7 +12,7 @@ At the same time he posted sample tracks for Bare Knuckle (Streets of Rage), Act
 
 The purpose of this tools is to format the MUC files for use in the PC-8801 d88 image disks and in an emulator or the original PC-8801. Since MUC files are easily released for Windows this simply adds the BASIC line numbers, removes unwanted characters and removes comments if requested.
 
-It also does teh reverse process, when extracting a BASIC file from the PC-8801 disks, it can remove line numbers for use in the MUCOM88 windows version.
+It also does the reverse process, when extracting a BASIC file from the PC-8801 disks, it can remove line numbers for use in the MUCOM88 windows version.
 
 # Usage 
 
@@ -20,12 +20,17 @@ Files can be inserted and removed from and to d88 image disks with the M88 emula
 
 Before uploading, you can convert the file with:
 
-MUConvert -pc88 <source> <target> [-withcomments]
+MUConvert -pc88 <source> <target> [-withcomments] [-withheader]
 
 The [-withcomments] parameter is optional, and it retains the comments marked with ; in the MUC file.
+
+The [-withheader] parameter is optional, and it retains the header comments marked with # at the beginning of the MUC file. Some stray lines form comments might be left behind.
+
 The reverse is also possible, you can use:
 
 MUConvert -muc <source> <target>
+  
+This converts the BASIC file extracted from a d88 floppy image to the MUC format, removing the BASIC line numbers at teh start of each line.
 
 
 # Original Files
