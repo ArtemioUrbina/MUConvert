@@ -1,3 +1,8 @@
+/* 
+ * MUConvert for Yuzo Koshiro's MUCOM88
+ * 2019 Artemio Urbina 
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -138,7 +143,7 @@ int main(int argc, char **argv)
 	int type = UNDEFINED, removecomments = 1;
 	
 	printf("MUC Windows <-> PC-88 MUCOM88 converter\n");
-	printf("\tArtemio Urbina 2018 under GPL\n\tThanks to Yuzo Koshiro\n");
+	printf("\tArtemio Urbina 2019 under GPL\n\tThanks to Yuzo Koshiro\n");
 
 	if(argc >= 4)
 	{
